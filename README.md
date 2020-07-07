@@ -255,3 +255,88 @@ db.student.find({
 })
 ```
 
+### 文档基本操作
+
+#### 数据库的操作
+
+**创建数据库**：
+
+- `use mydb` 创建数据库
+- `db` 查看当前连接的数据库
+- `show dbs` 查看所有的数据库
+
+**销毁数据库**：
+
+- `db.dropDatabase()`
+
+#### 集合的操作
+
+**创建集合**：
+
+语法：`db.createCollection(name, options(可选))`
+
+- `db.createCollection("users")`创建集合
+- `show collections`查看创建的集合
+
+**options**：
+
+- capped：类型为Boolean，默认为false，为true则创建固定大小的集合，当其条目达到最大时自动覆盖以前的条目。与size一起使用。
+- autoIndexId：类型为Boolean，默认为false，如果设置为true，则会在_id字段上自动创建索引
+- size：单位为byte，如果capped为true则需要指定
+- max：指定的最大文档数
+
+mongodb可以在创建文档时自动创建集合
+
+**删除集合**：
+
+语法：`db.COLLECTION.drop()`
+
+- `db.users.drop()`删除集合
+
+#### 文档的操作
+
+**插入文档**：
+
+语法：`db.COLLECTION_NAME.insert(document)`
+
+之前是直接在document中写入数据，这里也可以通过参数赋值的方式
+
+```js
+> stud1 = ({name:'王五', age:26, gender:'男'})
+> db.student.insert(stud1)
+```
+
+**更新文档**：
+
+语法：`db.COLLECTION_NAME.update(SELECTION_CRITERIA, UPDATED_DATA)`
+
+```js
+> db.student.update({name:"张三"}, 
+    {$set:{email:"zhangsan@qq.com"}}, 
+)
+> db.student.find({name:"张三"})
+```
+
+- 将name:"张三"的文档的email修改为`zhangsan@qq.com`
+- 第一个大括号中的内容是查找条件，第二个大括号则表示要更新的数据（注意：$set是固定写法，如不加则用更新数据覆盖原先数据，相当于原先数据丢失）
+- 默认的update函数只对一个文档更新，如果想作用所有文档，则需要加入`mutil:true`
+
+```js
+> db.student.update({name:/^张/}, 
+    {$set:{email:"test@qq.com"}}, 
+    { multi: true, upsert: false}
+)
+
+> db.student.find({name:/^张/})
+```
+
+**替换已存在的文档**：
+
+语法：`db.COLLECTION_NAME.save({_id:ObjectId(), NEW_DATA})`
+
+**删除文档**：
+
+语法：`db.COLLECTION_NAME.remove(DELECTION_CRITERIA)`
+
+这里的删除参数相当于查找条件
+
