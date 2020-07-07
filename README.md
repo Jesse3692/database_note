@@ -23,7 +23,9 @@ mongodb与mysql的比较：
 |   表   |  集合   |
 |  记录  |  文档   |
 
-### 基本概念
+### 基本概念和简单操作
+
+#### 概念：数据库，文档，集合，元数据
 
 **数据库**：一个mongodb可以创建多个数据库，库名规范：不能有空格、点号和$符
 
@@ -41,7 +43,7 @@ DBNAME可用db或数据库名替代：
 - DBNAME.system.users 列出访问数据库的用户
 - DBNAME.system.sources 列出服务器信息
 
-### 数据库的创建和销毁
+#### 数据库的创建和销毁
 
 **创建数据库**：
 
@@ -53,7 +55,7 @@ DBNAME可用db或数据库名替代：
 
 - `db.dropDatabase()`
 
-### 集合的创建和销毁
+#### 集合的创建和销毁
 
 **创建集合**：
 
@@ -64,7 +66,7 @@ DBNAME可用db或数据库名替代：
 
 - `db.users.drop()`删除集合
 
-### 向集合中插入数据
+#### 向集合中插入数据
 
 可以在插入数据时同时创建集合
 
@@ -93,3 +95,163 @@ db.users.save(
 
 - insert只能插入一条新的记录无法插入一条已经存在的记录
 - save不仅可以保存一条新纪录也可以更新原纪录
+
+### 数据查询
+
+#### find()语句
+
+**用法**：`db.COLLECTION_NAME.find()`
+
+```js
+> use post
+> db.post.insert([
+{
+   title: 'MongoDB Overview',
+   description: 'MongoDB is no sql database',
+   by: 'mongodb',
+   url: 'http://www.mongodb.com',
+   tags: ['mongodb', 'database', 'NoSQL'],
+   likes: 100
+},
+{
+   title: 'NoSQL Database',
+   description: "NoSQL database doesn't have tables",
+   by: 'mongodb',
+   url: 'http://www.mongodb.com',
+   tags: ['mongodb', 'database', 'NoSQL'],
+   likes: 20,
+   comments: [
+      {
+         user:'user1',
+         message: 'My first comment',
+         dateCreated: new Date(2013,11,10,2,35),
+         like: 0
+      }
+   ]
+}
+])
+```
+
+查询数据，不加任何参数默认返回所有数据记录：
+
+```js
+> db.post.find()
+```
+
+这种写法会导致，大量的数据传输，造成服务器响应迟缓，显示的数据也不美观
+
+**pretty()语句**
+
+使用pretty()语句可以使查询输出的结果更美观
+
+```js
+> db.post.find().pretty()
+```
+
+也可以使用以下方式让mongo shell始终以pretty的方式显示返回数据
+
+```shell
+echo "DBQuery.prototype._prettyShell = true" >> ~/.mongorc.js  # Linux
+```
+
+在windows下可以找到`C:\Users\用户名\.mongorc.js`文件，然后在里面写入`DBQuery.prototype._prettyShell = true`
+
+#### AND运算符
+
+mongodb中没有类似于其他数据库的AND运算符，当find()中传入多个键值对时，Mongodb就会将其作为AND查询处理
+
+**用法**：`db.COLLECTION_NAME.find({key1:value1, key2:value2})`
+
+```js
+>  db.post.find({"by":"mongodb", "likes":20})
+```
+
+上面的语句就可以查询出by字段为“mongodb”，likes字段为“20”的所有记录
+
+它对应的关系型SQL语句为：
+
+```mysql
+SELECT * FROM post WHERE by='mongodb' AND likes=20
+```
+
+#### OR运算符
+
+mongodb中，OR查询语句以`$or`作为关键词
+
+**用法**：
+
+```js
+> db.post.find(
+	{
+		$or:[
+			{key1:value1},{key2,value2}
+		]
+	}
+)
+```
+
+```js
+> db.post.find({
+    $or: [{by:"mongodb"}, {title:"MongoDB Overview"}]
+})
+```
+
+它对应的关系型SQL语句为：
+
+```js
+SELECT * FROM post WHERE by='mongodb' OR title='MongoDB Overview'
+```
+
+#### 比较运算符
+
+```js
+> db.post.find({
+	"likes":{$gt:10},
+	$or:[
+		{by:"mongodb"}, 
+		{title:"MongoDB Overview"}
+	]
+})
+```
+
+- `$gt` ：大于  greater than
+- `$lt` ：小于  less than
+- `$gte` ：大于等于  greater than equal
+- `$lte` ： 小于等于 less than equal
+
+#### 模糊查询
+
+mongodb的模糊查询可以使用正则匹配的方式实现：
+
+```
+# 以'start'开头的匹配
+{"name":/^start/}
+# 以'tail'结尾的匹配
+{"name":/tail$/}
+```
+
+**实践**：
+
+插入以下数据：
+
+```js
+> use student
+
+> db.student.insert([
+    {name:"张三", age:18, gender:"男" },
+    {name:"李雷", age:25, gender:"男"},
+    {name:"韩梅梅", age:23, gender:"女"}
+    {name:"张益达", age:20, gender:"男"}
+])
+```
+
+查询学生库，学生集合中姓张且年龄不小于20岁的男同学
+
+```js
+db.student.find({
+    name: /^张/,
+    age:{$gte:20},
+    gender:"男"
+})
+```
+
