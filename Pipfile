@@ -1,0 +1,16 @@
+[[source]]
+name = "pypi"
+url = "http://mirrors.tencentyun.com/pypi/simple"
+verify_ssl = false
+
+[dev-packages]
+pylint = "*"
+
+[packages]
+sqlalchemy = "*"
+pymysql = "*"
+faker = "*"
+ipython = "*"
+
+[requires]
+python_version = "3.6"

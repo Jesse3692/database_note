@@ -130,3 +130,6 @@ dmypy.json
 
 # sm.sm
 /upload
+
+# mysql
+/data/mysql
