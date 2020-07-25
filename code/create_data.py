@@ -1,12 +1,13 @@
 from sqlalchemy.orm import sessionmaker
 from faker import Faker
-from mysql_sqlalchemy_db_1 import Base, engine, User, Course
+from db import Base, engine, User, Course
+from db import Lab, Tag
 
 session = sessionmaker(engine)()
 fake = Faker('zh-cn')
 
 def create_user():
-    for i in range(10):
+    for _ in range(10):
         # 创建10个User类实例，伪造name和email
         user = User(name=fake.name(), email=fake.email())
         # 将实例添加到session会话中，以备提交到数据库
@@ -25,9 +26,19 @@ def create_courses():
             course = Course(name=''.join(fake.words(4)), user_id=user.id)
             session.add(course)
 
+def create_labs():
+    for course in session.query(Course):
+        lab = Lab(name=''.join(fake.words(5)), id=course.id)
+        session.add(lab)
+
+def create_tags():
+    for name in ['python', 'linux', 'java', 'mysql', 'lisp']:
+        tag = Tag(name=name)
+        session.add(tag)
+
 def main():
     # 执行两个创建实例的函数，session会话内就有了这些实例
-    create_users()
+    create_user()
     create_courses()
     # 执行session的commit方法将全部数据提交到对应的数据表中
     session.commit()
