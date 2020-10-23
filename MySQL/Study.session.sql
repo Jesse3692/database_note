@@ -31,3 +31,19 @@ select * from user;
 select * from course;
 
 select * from course where user_id = 4;
+
+show DATABASES;
+
+show tables;
+
+drop table if exists course;
+drop table if exists user;
+desc lab;
+desc rela;
+desc tag;
+
+select * from lab;
+
+select * from tag;
+
+select * from rela;

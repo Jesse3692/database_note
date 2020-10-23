@@ -209,3 +209,152 @@ In [13]: session.delete(user)
 In [14]: session.commit()
 ```
 查看数据表的情况，如预期，user表中id为4的行被删除，course表中user_id为4的行也被删除
+
+
+一对一关系
+
+这里我们学习创建一对一关系的数据表。为了方便演示，假设我们的每个课程只有一个实验，我们要创建映射类Lab和实验表lab，课程和实验就是一对一的关系，如何实现这种关系呢？把lab的主键id设置为外键关联到course的主键id即可，因为主键是自带唯一约束的，这样就实现了一对一关系。
+
+创建映射类Lab
+
+```python
+class Lab(Base):
+    __tablename__ = 'lab'
+    # 设置主键为外键，关联course表的id字段
+    # 注意参数顺序，先定义外键，再定义主键
+    id = Column(Integer, ForeignKey('course.id'), primary_key=True)
+    name = Column(String(128))
+    # 设置查询接口，Lab实例的course属性值为Course实例
+    # Course实例的lab属性值默认为列表，列表中有一个Lab实例
+    # uselist参数可以设置Course实例的lab属性值为Lab实例而非列表
+    course = relationship('Course', backref=backref('lab', uselist=False))
+
+    def __repr__(self):
+        return '<Lab: {}>'.format(self.name)
+```
+
+保存代码后，在终端运行文件即可生成数据表： `python db.py`
+
+
+多对多关系
+
+一个课程可以有多个标签，每个标签可以贴在多个课程上，我们需要实现course课程表和tag标签表的多对多关系。
+
+- 一对多关系： 一个User实例（课程教师）对应多个Course实例，一个Course实例对应一个User实例
+
+- 一对一关系： 一个Course实例对应一个Lab实例，一个Lab实例对应一个Course实例
+
+- 多对多关系： 一个Course实例对应多个Tag实例，一个Tag实例对应多个Course实例
+
+满足上述需求的多对多关系，需要在创建Tag映射类之前，首先创建中间表的映射类，用Table这个特殊类创建，此类的实例就是映射类
+
+```python
+# 创建Table类的实例，即中间表映射类，赋值给变量Rela
+# 该类子啊实例化时，接收4个参数：
+# ① 数据表名字 ②Base metadata
+# ③和④两个Column（列名，数据类型，外键，主键）
+Rela = Table('rela', Base.metadata,
+    Column('tag_id', Integer, ForeignKey('tag.id'), primary_key=True),
+    Column('course_id', Integer, ForeignKey('course.id'), primary_key=True)
+)
+```
+
+有了中间表的映射类，就可以创建tag表的映射类Tag了
+
+```python
+class Tag(Base):
+    __tablename__ = 'tag'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(64), unique=True)
+    # 设置查询接口，secondary指定多对多关系的中间表，注意数据类型不是字符串
+    course = relationship('Course', secondary=Rela, backref='tag')
+
+    def __repr__(self):
+        return '<Tag: {}>'.format(self.name)
+```
+
+同样的，终端运行文件生成数据表： `python db.py`
+
+注意：中间表是真是存在的数据表，它有两个字段，当我们给课程添加标签时，该表会记录相关信息：
+
+下面对`create_data.py`文件补充一些代码，我们用10个随机中文汉字作为lab表的name字段的值，创建20个Lab类的实例，10个Tag类的实例
+
+```python
+from db import Lab, Tag
+
+def create_labs():
+    for course in session.query(Course):
+        lab = Lab(name=''.join(fake.words(5)), id=course.id)
+        session.add(lab)
+
+def create_user():
+    for name in ['python', 'linux', 'java', 'mysql', 'lisp']:
+        tag = Tag(name=name)
+        session.add(tag)
+```
+
+启动命令行交互解释器ipython，引入相关对象，执行创建数据的函数
+
+```python
+In [1]: from create_data import *
+
+In [2]: create_labs()
+
+In [3]: create_tags()
+
+In [4]: session.commit()
+```
+
+查看数据库内数据
+
+```sql
+select * from lab;
+
+select * from tag;
+```
+
+给课程添加标签
+
+课程实例有tag属性，这是在映射类中设置的查询接口，标签实例也有对应的查询接口course，它们的属性值均为空列表，如果要给课程添加标签，只需要将标签实例添加到tag属性的列表中，给标签添加课程同理
+
+```python
+# 通过查询将两个课程实例赋值给变量c1,c2 将两个标签实例赋值给 t1, t2
+In [5]: c1 = session.query(Course)[3]
+
+In [6]: c2 = session.query(Course)[11]
+
+In [7]: t1 = session.query(Tag)[1]
+
+In [8]: t2 = session.query(Tag)[2]
+
+# 课程的tag属性默认为空列表
+In [9]: c1.tag
+Out[9]: []
+
+# 将标签实例添加到列表
+In [10]: c1.tag.append(t1)
+
+In [11]: c1.tag.append(t2)
+
+# 标签的course属性里就有了对应的课程实例
+In [12]: t1.course
+Out[12]: [<Course: 选择只有只有市场>]
+
+# 当然了，课程实例的tag属性里有了两个标签实例
+In [13]: c1.tag
+Out[13]: [<Tag: linux>, <Tag: lisp>]
+
+In [14]: t2.course.append(c2)
+
+In [15]: c2.tag
+Out[15]: [<Tag: lisp>]
+
+# 执行session.commit() 即可将它们的关系传入数据库中
+In [16]: session.commit()
+```
+
+查看数据库的中间表，可以看到给课程添加标签后，每组关系都被保存在该表中
+
+```sql
+select * from rela;
+```
