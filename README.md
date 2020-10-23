@@ -1,6 +1,8 @@
 # Datebase学习笔记
 
-## Elasticsearch数据库
+## MySQL数据库
+
+
 
 ## Mongodb数据库
 
@@ -511,6 +513,7 @@ mongodb的聚合管道将mongodb文档在一个管道处理完毕后将结果传
 
 ```js
 > db.shiyanlou.aggregate([{$match:{user_id:{$gt:0,$lte:2}}},{$group:{_id:"user",count:{$sum:1}}}])
+
 {"_id":"user","count":2}
 ```
 

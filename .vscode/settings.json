@@ -1,7 +1,22 @@
 {
     "sqltools.connections": [
         {
+            "connectionTimeout": 3,
+            "database": "school",
+            "driver": "MySQL",
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "name": "school",
+            "password": "123456",
+            "port": 3306,
+            "previewLimit": 50,
+            "server": "localhost",
+            "username": "root"
+        },
+        {
             "database": "study",
+            "connectionTimeout": 3,
             "driver": "MySQL",
             "mysqlOptions": {
                 "authProtocol": "default"
@@ -9,6 +24,19 @@
             "name": "Study",
             "password": "123456",
             "port": 3306,
+            "previewLimit": 50,
+            "server": "localhost",
+            "username": "root"
+        },
+        {
+            "database": "test",
+            "driver": "MySQL",
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "name": "test",
+            "password": "123456",
+            "port": 3309,
             "previewLimit": 50,
             "server": "localhost",
             "username": "root"

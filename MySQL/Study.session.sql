@@ -1,5 +1,7 @@
 SHOW DATABASES;
 
+create DATABASE study CHARACTER set utf8;
+
 show tables;
 
 show create table user;

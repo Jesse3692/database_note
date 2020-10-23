@@ -3,10 +3,10 @@ services:
     mysql-legacy:
         image: mysql:5.7
         ports:
-            - "3306:3306"
+            - "3309:3306"
         environment: 
             MYSQL_ROOT_PASSWORD: 123456
-            MYSQL_DATABASE: study
+            MYSQL_DATABASE: test
         volumes:
             - "./data/mysql:/var/lib/mysql:rw"
             - "./conf/mysql.cnf:/etc/mysql/my.cnf"

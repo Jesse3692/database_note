@@ -1,15 +1,18 @@
-数据库是按照数据结构来组织、存储和管理数据的仓库
-sql是英文structured query language的缩写，意为结构化查询语言
-orm是英文object relational mapping的缩写，意为对象关系映射。在Python中我们可以把一个关系数据库的表结构映射到Python类中
-python中的orm框架有，SQLobject框架、storm框架、django内置的orm、著名的SQLAlchemy
+**一些概念**：
 
-数据库操作：
-连接数据库：mysql -h 127.0.0.1 -uroot -p 123456
-创建指定字符集的数据库：create database study character set = UTF8;
-查看MySQL数据库的默认编码格式：show variables like 'char%database';
-查看数据库的创建信息：show create database study\G;
+`数据库`是按照数据结构来组织、存储和管理数据的仓库
+`sql`是英文structured query language的缩写，意为结构化查询语言
+`orm`是英文object relational mapping的缩写，意为对象关系映射。在Python中我们可以把一个关系数据库的表结构映射到Python类中
+python中的`orm框架`有，SQLobject框架、storm框架、django内置的orm、著名的SQLAlchemy
 
-创建引擎 create_engine
+**数据库操作**：
+
+- 连接数据库：mysql -h 127.0.0.1 -uroot -p 123456
+- 创建指定字符集的数据库：create database study character set = UTF8;
+- 查看MySQL数据库的默认编码格式：show variables like 'char%database';
+- 查看数据库的创建信息：show create database study\G;
+
+**创建引擎 create_engine**
 
 ```python
 from sqlalchemy import create_engine
@@ -17,7 +20,7 @@ from sqlalchemy import create_engine
 engine = create_engine('mysql://root@127.0.0.1:3306/study?charset=utf8')
 ```
 
-创建映射类需要继承声明基类，使用declarative_base：
+**创建映射类需要继承声明基类**，使用declarative_base：
 
 ```python
 from sqlalchemy.ext.declarative import declarative_base
@@ -43,7 +46,7 @@ class User(Base):  # 继承声明基类
         return '<User: {}>'.format(self.name)
 ```
 
-一对多关系
+**一对多关系**
 
 ```python
 from sqlalchemy import ForeignKey
@@ -90,8 +93,7 @@ class Course(Base):
 |   order_by   |    指定查询记录的排序方式  |
 |   secondary   |   指定多对多关系中关系表的名字   |
 
-
-创建数据表
+**创建数据表**
 
 声明基类Base在创建之后并不会主动连接数据库，因为它的默认设置为惰性模式。Base的metadata有个create_all方法，执行此方法会主动连接数据库并创建全部数据表，完成之后自动断开与数据库的连接
 
@@ -99,15 +101,15 @@ class Course(Base):
 Base.metadata.create_all()
 ```
 
-完整的建表代码
+[完整的建表代码](https://github.com/Jesse3692/database_note/blob/707d9dd1c1e6bfe95e21a47bd88efa33385710e9/code/mysql_sqlalchemy_db_1.py)
 
-添加测试数据
+**添加测试数据**
 
-安装faker`pipenv install faker`
+- 安装faker`pipenv install faker`
 
-安装ipython`pipenv install ipython`
+- 安装ipython`pipenv install ipython`
 
-伪造数据：
+**伪造数据：**
 
 ```python
 In [1]: from faker import Faker
@@ -130,7 +132,7 @@ In [7]: fake.date()
 Out[7]: '2018-08-28'
 ```
 
-使用session处理数据
+**使用session处理数据**
 
 上面写了使用映射类创建数据表要用声明基类Base
 
@@ -147,7 +149,7 @@ session = sessionmaker(engine)()
 
 当我们创建了session实例，就启动了一个操作MySQL数据库的会话
 
-生成测试数据
+[生成测试数据](https://github.com/Jesse3692/database_note/blob/707d9dd1c1e6bfe95e21a47bd88efa33385710e9/code/create_data.py)
 
 在ipython中操作
 
