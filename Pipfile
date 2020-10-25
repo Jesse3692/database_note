@@ -1,16 +1,18 @@
 [[source]]
 name = "pypi"
-url = "http://mirrors.tencentyun.com/pypi/simple"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 verify_ssl = false
 
 [dev-packages]
 pylint = "*"
+autopep8 = "*"
 
 [packages]
 sqlalchemy = "*"
 pymysql = "*"
 faker = "*"
 ipython = "*"
+neo4j = "==4.0.0a1"
 
 [requires]
 python_version = "3.6"

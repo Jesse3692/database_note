@@ -1,12 +1,27 @@
 version: '3'
 services: 
-    mysql-legacy:
-        image: mysql:5.7
-        ports:
-            - "3309:3306"
-        environment: 
-            MYSQL_ROOT_PASSWORD: 123456
-            MYSQL_DATABASE: test
+    # mysql-legacy:
+    #     image: mysql:5.7
+    #     ports:
+    #         - "3309:3306"
+    #     environment: 
+    #         MYSQL_ROOT_PASSWORD: 123456
+    #         MYSQL_DATABASE: test
+    #     volumes:
+    #         - "./data/mysql:/var/lib/mysql:rw"
+    #         - "./data/mysql/conf/mysql.cnf:/etc/mysql/my.cnf"
+    neo4j:
+        image: neo4j:4.1.1
         volumes:
-            - "./data/mysql:/var/lib/mysql:rw"
-            - "./conf/mysql.cnf:/etc/mysql/my.cnf"
+        - ./data/neo4j/conf:/var/lib/neo4j/conf
+        - ./data/neo4j/import:/var/lib/neo4j/import
+        # - ./plugins:/plugins
+        - ./data/neo4j:/data
+        - ./data/neo4j/logs:/var/lib/neo4j/logs
+        # restart: always
+        ports:
+        - 7474:7474
+        - 7687:7687
+        environment:
+        - NEO4J_dbms_memory_heap_maxSize=4G
+        - NEO4J_AUTH=neo4j/123456 #修改默认用户密码

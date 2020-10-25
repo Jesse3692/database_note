@@ -131,5 +131,11 @@ dmypy.json
 # sm.sm
 /upload
 
-# mysql
-/data/mysql
+# data mysql neo4j
+/data/mysql/*
+!**/data/mysql/conf/
+data/neo4j/databases
+data/neo4j/dbms
+data/neo4j/logs
+data/neo4j/transactions
+
