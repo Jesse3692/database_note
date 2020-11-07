@@ -16,6 +16,7 @@ neo4j = "==4.0.0a1"
 neomodel = "==4.0.1"
 flask-sqlalchemy = "==2.4.1"
 incremental = "*"
+redis = "*"
 
 [requires]
 python_version = "3.6"

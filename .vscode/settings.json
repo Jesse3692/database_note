@@ -40,6 +40,7 @@
             "previewLimit": 50,
             "server": "localhost",
             "username": "root"
+
         }
     ]
 }
