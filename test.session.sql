@@ -1,0 +1,1 @@
+show CREATE DATABASE test;

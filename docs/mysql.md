@@ -2,12 +2,21 @@
 
 ### 数据库
 
-- 创建数据库：create database [if not exists] db_name;
+通过环境变量创建的docker容器数据库，其编码为latin1
+
+- 创建数据库：`create database [if not exists] db_name [DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci]`;
+
 - 查看已有的数据库：show database;
+
 - 使用数据库：use db_name;
+
 - 查看 MySQL 的默认编码：show variables like '%character%';
+
 - 修改数据库编码：alter database db_name character set utf8;
+
 - 删除数据库：drop database [if not exists] db_name;
+
+  
 
 ### 数据表
 
