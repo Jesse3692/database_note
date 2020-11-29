@@ -139,4 +139,4 @@ data/neo4j/dbms
 data/neo4j/logs
 data/neo4j/transactions
 
-data/mongo/db/
+data/mongo
